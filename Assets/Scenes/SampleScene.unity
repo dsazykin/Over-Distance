@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 275801933}
   - component: {fileID: 275801932}
   - component: {fileID: 275801931}
+  - component: {fileID: 275801934}
   m_Layer: 0
   m_Name: BG_Night_Sky
   m_TagString: Untagged
@@ -279,6 +280,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &275801934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275801930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa5813eb5ab9904da5318ff8ee0009b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
+  parallaxSpeed: 0.95
 --- !u!1 &337649670
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,6 +303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 337649672}
   - component: {fileID: 337649671}
+  - component: {fileID: 337649673}
   m_Layer: 0
   m_Name: BG_Night_Mountains
   m_TagString: Untagged
@@ -370,6 +385,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &337649673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337649670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa5813eb5ab9904da5318ff8ee0009b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
+  parallaxSpeed: 0.8
 --- !u!1 &435127381
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,6 +408,7 @@ GameObject:
   m_Component:
   - component: {fileID: 435127383}
   - component: {fileID: 435127382}
+  - component: {fileID: 435127384}
   m_Layer: 0
   m_Name: BG_Night_Foreground
   m_TagString: Untagged
@@ -461,6 +490,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &435127384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435127381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa5813eb5ab9904da5318ff8ee0009b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
+  parallaxSpeed: 0.3
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2433,6 +2475,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1278482428}
   - component: {fileID: 1278482427}
+  - component: {fileID: 1278482429}
   m_Layer: 0
   m_Name: BG_Night_Trees
   m_TagString: Untagged
@@ -2514,6 +2557,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1278482429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1278482426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5aa5813eb5ab9904da5318ff8ee0009b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParallaxBackground
+  parallaxSpeed: 0.6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
