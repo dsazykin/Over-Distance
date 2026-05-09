@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: d4a0677b4e7adca468f222396b6f916d
+guid: 50dff62df846eec41803d1acc1b69696
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1848994907135842936
-    second: night4_0
+      213: 5228263677015116528
+    second: night4 (1)_0
   - first:
-      213: 1340840237171469441
-    second: night4_1
+      213: -6127393709395032566
+    second: night4 (1)_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -43,9 +43,9 @@ TextureImporter:
     filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -116,13 +116,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: night4_0
+      name: night4 (1)_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 968
-        height: 902
+        width: 967
+        height: 769
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,20 +131,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 88569a8adec0756e0800000000000000
-      internalID: -1848994907135842936
+      spriteID: 0fa409c1d168e8840800000000000000
+      internalID: 5228263677015116528
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: night4_1
+      name: night4 (1)_1
       rect:
         serializedVersion: 2
-        x: 1074
+        x: 1055
         y: 0
-        width: 974
-        height: 757
+        width: 993
+        height: 646
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,8 +153,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 18ce725771f9b9210800000000000000
-      internalID: 1340840237171469441
+      spriteID: a06cb88b2ef17faa0800000000000000
+      internalID: -6127393709395032566
       vertices: []
       indices: 
       edges: []
@@ -173,8 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      night4_0: -1848994907135842936
-      night4_1: 1340840237171469441
+      night4 (1)_0: 5228263677015116528
+      night4 (1)_1: -6127393709395032566
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
