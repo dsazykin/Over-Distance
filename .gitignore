@@ -105,3 +105,26 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# =========================
+# Custom Additions (OS & IDE)
+# =========================
+
+# Operating System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+$RECYCLE.BIN/
+
+# JetBrains Rider / IDE Specifics
+.idea/
+*.sln.ide/
