@@ -20,6 +20,10 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isDashing;
     private bool canDash = true;
+    
+    [Header("Visuals")]
+    // Create a reference slot for the Sprite Renderer
+    public SpriteRenderer spriteRenderer;
 
     void OnMove(InputValue value)
     {
@@ -63,12 +67,19 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         isDashing = true;
 
-        // Wait for a fraction of a second while the player zooms forward
-        yield return new WaitForSeconds(dashDuration);
-        isDashing = false; // Stop dashing
+        // Change the color to blue when the dash starts!
+        spriteRenderer.color = Color.blue; 
 
-        // Wait for the cooldown timer to finish before they can dash again
+        yield return new WaitForSeconds(dashDuration);
+        
+        isDashing = false; 
+        
+        // Change it back to white (the default color) when the dash ends!
+        spriteRenderer.color = Color.white; 
+
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
     }
+    
+    
 }
