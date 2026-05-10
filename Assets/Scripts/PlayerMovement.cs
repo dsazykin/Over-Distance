@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Visuals")]
     public SpriteRenderer spriteRenderer; 
+    public Animator animator;
     
     [Header("Directional Sprites")]
     public Sprite spriteDown;
@@ -35,39 +36,69 @@ public class PlayerMovement : MonoBehaviour
     private bool isAttacking = false;
 
     private Vector2 moveInput;
+    
+    void Start()
+    {
+        // Automatically find the Animator that Unity added to your player
+        animator = GetComponent<Animator>();
+    }
 
     void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
-
         movement = moveInput;
 
-        // Only swap pictures if the player is actually pressing a direction
-        if (moveInput != Vector2.zero) {
-            lastMovement = movement;
+        // ARE WE MOVING?
+        if (moveInput != Vector2.zero)
+        {
+            lastMovement = moveInput;
             
-            // Are we moving horizontally (Left/Right) more than vertically (Up/Down)?
-            if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y)) {
-                // Show the Side profile picture
-                spriteRenderer.sprite = spriteSide;
+            // Turn on the animation engine!
+            animator.enabled = true; 
 
-                // FLIP LOGIC: Look at which way we are pressing
-                if (moveInput.x > 0) {
-                    spriteRenderer.flipX = false; // Right
-                }
-                else if (moveInput.x < 0) {
-                    spriteRenderer.flipX = true;  // Left
-                }
+            // Are we moving horizontally more than vertically?
+            if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
+            {
+                // Play the Side Walking Animation!
+                animator.Play("Daniel_Walk_Side"); 
+
+                // FLIP LOGIC
+                if (moveInput.x > 0) spriteRenderer.flipX = false; 
+                else if (moveInput.x < 0) spriteRenderer.flipX = true;  
             }
-            else { // We are moving vertically more than horizontally 
-                if (moveInput.y > 0) {
-                    // Show the Up picture
+            else // We are moving vertically
+            {
+                if (moveInput.y > 0)
+                {
+                    // We don't have a Walk Up animation yet, so we turn the animator off
+                    // and just show the static Up picture for now!
+                    animator.enabled = false;
                     spriteRenderer.sprite = spriteUp;
                 }
-                else if (moveInput.y < 0) {
-                    // Show the Down picture
-                    spriteRenderer.sprite = spriteDown;
+                else if (moveInput.y < 0)
+                {
+                    // Play the Down Walking Animation!
+                    animator.Play("Daniel_Walk_Front"); 
                 }
+            }
+        }
+        else 
+        {
+            // WE STOPPED MOVING!
+            // 1. Turn off the animation engine
+            animator.enabled = false; 
+
+            // 2. Look at which way we were facing last, and show that static picture
+            if (Mathf.Abs(lastMovement.x) > Mathf.Abs(lastMovement.y))
+            {
+                spriteRenderer.sprite = spriteSide;
+                if (lastMovement.x < 0) spriteRenderer.flipX = true;
+                else spriteRenderer.flipX = false;
+            }
+            else
+            {
+                if (lastMovement.y > 0) spriteRenderer.sprite = spriteUp;
+                else spriteRenderer.sprite = spriteDown;
             }
         }
     }
