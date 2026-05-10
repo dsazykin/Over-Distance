@@ -41,6 +41,11 @@ public class PlayerMovement : MonoBehaviour
     {
         // Automatically find the Animator that Unity added to your player
         animator = GetComponent<Animator>();
+        
+        animator.enabled = false;
+
+        // Force the starting picture to be the "facing down" sprite
+        spriteRenderer.sprite = spriteDown;
     }
 
     void OnMove(InputValue value)
