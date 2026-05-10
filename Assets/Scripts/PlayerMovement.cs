@@ -28,6 +28,11 @@ public class PlayerMovement : MonoBehaviour
     public Sprite spriteDown;
     public Sprite spriteUp;
     public Sprite spriteSide;
+    
+    [Header("Combat Settings")]
+    public GameObject weaponHitbox;
+    public float attackDuration = 0.15f; // How long the hitbox stays active
+    private bool isAttacking = false;
 
     private Vector2 moveInput;
 
@@ -38,33 +43,28 @@ public class PlayerMovement : MonoBehaviour
         movement = moveInput;
 
         // Only swap pictures if the player is actually pressing a direction
-        if (moveInput != Vector2.zero)
-        {
+        if (moveInput != Vector2.zero) {
+            lastMovement = movement;
+            
             // Are we moving horizontally (Left/Right) more than vertically (Up/Down)?
-            if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
-            {
+            if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y)) {
                 // Show the Side profile picture
                 spriteRenderer.sprite = spriteSide;
 
                 // FLIP LOGIC: Look at which way we are pressing
-                if (moveInput.x > 0) 
-                {
+                if (moveInput.x > 0) {
                     spriteRenderer.flipX = false; // Right
                 }
-                else if (moveInput.x < 0) 
-                {
+                else if (moveInput.x < 0) {
                     spriteRenderer.flipX = true;  // Left
                 }
             }
-            else // We are moving vertically more than horizontally
-            {
-                if (moveInput.y > 0)
-                {
+            else { // We are moving vertically more than horizontally 
+                if (moveInput.y > 0) {
                     // Show the Up picture
                     spriteRenderer.sprite = spriteUp;
                 }
-                else if (moveInput.y < 0)
-                {
+                else if (moveInput.y < 0) {
                     // Show the Down picture
                     spriteRenderer.sprite = spriteDown;
                 }
@@ -74,20 +74,16 @@ public class PlayerMovement : MonoBehaviour
 
     // Because we named the action "Dash" in the input settings, 
     // Unity automatically looks for a function named "OnDash"
-    void OnDash(InputValue value)
-    {
+    void OnDash(InputValue value) {
         // Only dash if the button was pressed, we aren't already dashing, and cooldown is done
-        if (value.isPressed && canDash && !isDashing)
-        {
+        if (value.isPressed && canDash && !isDashing){
             StartCoroutine(PerformDash());
         }
     }
 
-    void FixedUpdate()
-    {
+    void FixedUpdate() {
         // If we are currently dashing, ignore normal movement and apply dash velocity
-        if (isDashing)
-        {
+        if (isDashing) {
             rb.MovePosition(rb.position + lastMovement * dashSpeed * Time.fixedDeltaTime);
             return; // This stops the rest of the FixedUpdate code from running
         }
@@ -97,8 +93,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // A Coroutine acts like a mini-timeline that we can pause
-    private IEnumerator PerformDash()
-    {
+    private IEnumerator PerformDash() {
         canDash = false;
         isDashing = true;
 
@@ -116,5 +111,70 @@ public class PlayerMovement : MonoBehaviour
         canDash = true;
     }
     
+    // Unity automatically calls this because you named the input action "Attack"
+    void OnAttack(InputValue value) {
+        if (value.isPressed && !isAttacking && !isDashing){
+            StartCoroutine(PerformAttack());
+        }
+    }
+
+    private IEnumerator PerformAttack() {
+        isAttacking = true;
+
+        // 1. Move the hitbox to face the correct direction!
+        // We use lastMovement.normalized to get a clean direction (Up, Down, Left, or Right)
+        // and multiply it by 0.7f to push it 0.7 units out from the player's center.
+        if (lastMovement.x == 0) {
+            if (lastMovement.y > 0) {
+                weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 90f); // Rotate the hitbox to be vertical
+            }
+            else if (lastMovement.y < 0) {
+                weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -90f); // Rotate the hitbox to be vertical
+            }
+            
+            weaponHitbox.transform.localPosition = new Vector3(0f, lastMovement.y, 0f).normalized * 0.7f;
+            
+        } else if ( lastMovement.y == 0){
+            if (lastMovement.x > 0) {
+                weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 0f); // Rotate the hitbox to be vertical
+            }
+            else if (lastMovement.x < 0) {
+                weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 180f); // Rotate the hitbox to be vertical
+            }
+            
+            weaponHitbox.transform.localPosition = new Vector3(lastMovement.x, 0f, 0f).normalized * 0.7f;
+            
+        } else {
+            if (Mathf.Abs(lastMovement.x) > Mathf.Abs(lastMovement.y)) {
+                if (lastMovement.x > 0) {
+                    weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                }
+                else if (lastMovement.x < 0) {
+                    weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -180f);
+                }
+                weaponHitbox.transform.localPosition = new Vector3(lastMovement.x, 0f, 0f).normalized * 0.7f;
+            }
+            else {
+                if (lastMovement.y > 0) {
+                    weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+                }
+                else if (lastMovement.y < 0) {
+                    weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+                }
+                weaponHitbox.transform.localPosition = new Vector3(0f, lastMovement.y, 0f).normalized * 0.7f;
+            }
+        }
+
+        // 2. Turn the hitbox ON
+        weaponHitbox.SetActive(true);
+
+        // 3. Wait for the duration of the swing
+        yield return new WaitForSeconds(attackDuration);
+
+        // 4. Turn the hitbox OFF
+        weaponHitbox.SetActive(false);
+
+        isAttacking = false;
+    }
     
 }
