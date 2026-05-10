@@ -22,18 +22,53 @@ public class PlayerMovement : MonoBehaviour
     private bool canDash = true;
     
     [Header("Visuals")]
-    // Create a reference slot for the Sprite Renderer
-    public SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer; 
+    
+    [Header("Directional Sprites")]
+    public Sprite spriteDown;
+    public Sprite spriteUp;
+    public Sprite spriteSide;
+
+    private Vector2 moveInput;
 
     void OnMove(InputValue value)
     {
-        // Read the input
-        movement = value.Get<Vector2>();
+        moveInput = value.Get<Vector2>();
 
-        // If the player is currently pressing a direction, save it
-        if (movement != Vector2.zero)
+        movement = moveInput;
+
+        // Only swap pictures if the player is actually pressing a direction
+        if (moveInput != Vector2.zero)
         {
-            lastMovement = movement.normalized;
+            // Are we moving horizontally (Left/Right) more than vertically (Up/Down)?
+            if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
+            {
+                // Show the Side profile picture
+                spriteRenderer.sprite = spriteSide;
+
+                // FLIP LOGIC: Look at which way we are pressing
+                if (moveInput.x > 0) 
+                {
+                    spriteRenderer.flipX = false; // Right
+                }
+                else if (moveInput.x < 0) 
+                {
+                    spriteRenderer.flipX = true;  // Left
+                }
+            }
+            else // We are moving vertically more than horizontally
+            {
+                if (moveInput.y > 0)
+                {
+                    // Show the Up picture
+                    spriteRenderer.sprite = spriteUp;
+                }
+                else if (moveInput.y < 0)
+                {
+                    // Show the Down picture
+                    spriteRenderer.sprite = spriteDown;
+                }
+            }
         }
     }
 
