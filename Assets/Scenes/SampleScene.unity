@@ -674,6 +674,7 @@ GameObject:
   - component: {fileID: 572412062}
   - component: {fileID: 572412063}
   - component: {fileID: 572412064}
+  - component: {fileID: 572412065}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -905,6 +906,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &572412065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572412057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e67c50436fbc5b48891458bec82a6f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 100
+  currentHealth: 0
+  iFrameDuration: 1
+  spriteRenderer: {fileID: 0}
+  flickerInterval: 0.1
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -2613,6 +2631,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1902821591}
   - component: {fileID: 1902821590}
+  - component: {fileID: 1902821592}
   m_Layer: 0
   m_Name: WeaponHitbox
   m_TagString: Untagged
@@ -2681,6 +2700,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 572412061}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1902821592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902821589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cbca6965377ac1429e84c1c5b2a2e2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponDamage
+  damageAmount: 20
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
