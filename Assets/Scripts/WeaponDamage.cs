@@ -13,14 +13,5 @@ public class WeaponDamage : MonoBehaviour
         {
             enemy.TakeDamage(damageAmount);
         }
-        else
-        {
-            // Alternative check using tags if preferred
-            if (collision.CompareTag("Enemy"))
-            {
-                // If it has the tag but no component yet, we might want to log it
-                Debug.LogWarning("Hit an object tagged 'Enemy' but it has no EnemyHealth component!");
-            }
-        }
     }
 }
