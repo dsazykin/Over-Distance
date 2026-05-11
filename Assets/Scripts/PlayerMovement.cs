@@ -65,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
             if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
             {
                 // Play the Side Walking Animation!
-                animator.Play("Daniel_Walk_Side"); 
+                animator.Play("Daniel_Run_Side"); 
 
                 // FLIP LOGIC
                 if (moveInput.x > 0) spriteRenderer.flipX = false; 
