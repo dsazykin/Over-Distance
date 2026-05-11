@@ -29,6 +29,11 @@ public class PlayerMovement : MonoBehaviour
     public Sprite spriteDown;
     public Sprite spriteUp;
     public Sprite spriteSide;
+
+    [Header("Dash Sprites")]
+    public Sprite dashSpriteDown;
+    public Sprite dashSpriteUp;
+    public Sprite dashSpriteSide;
     
     [Header("Combat Settings")]
     public GameObject weaponHitbox;
@@ -58,18 +63,27 @@ public class PlayerMovement : MonoBehaviour
         moveInput = value.Get<Vector2>();
         movement = moveInput;
 
+        // Only update animations if we aren't currently dashing
+        if (!isDashing)
+        {
+            UpdateAnimationState();
+        }
+    }
+
+    private void UpdateAnimationState()
+    {
         if (moveInput != Vector2.zero)
         {
             lastMovement = moveInput;
-            animator.enabled = true; 
+            animator.enabled = true;
 
             // Horizontal movement priority
             if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
             {
-                animator.Play(WalkSideHash); 
+                animator.Play(WalkSideHash);
 
-                if (moveInput.x > 0) spriteRenderer.flipX = false; 
-                else if (moveInput.x < 0) spriteRenderer.flipX = true;  
+                if (moveInput.x > 0) spriteRenderer.flipX = false;
+                else if (moveInput.x < 0) spriteRenderer.flipX = true;
             }
             else // Vertical movement
             {
@@ -79,13 +93,13 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else if (moveInput.y < 0)
                 {
-                    animator.Play(WalkFrontHash); 
+                    animator.Play(WalkFrontHash);
                 }
             }
         }
-        else 
+        else
         {
-            animator.enabled = false; 
+            animator.enabled = false;
 
             if (Mathf.Abs(lastMovement.x) > Mathf.Abs(lastMovement.y))
             {
@@ -126,15 +140,23 @@ public class PlayerMovement : MonoBehaviour
         canDash = false;
         isDashing = true;
 
-        // Change the color to blue when the dash starts!
-        spriteRenderer.color = Color.blue; 
+        // 1. Disable animator so it doesn't override our dash sprite
+        animator.enabled = false;
+
+        // 2. Set the correct dash sprite based on direction
+        if (Mathf.Abs(lastMovement.x) > Mathf.Abs(lastMovement.y)) {
+            spriteRenderer.sprite = dashSpriteSide;
+            spriteRenderer.flipX = lastMovement.x < 0;
+        } else {
+            spriteRenderer.sprite = lastMovement.y > 0 ? dashSpriteUp : dashSpriteDown;
+        }
 
         yield return new WaitForSeconds(dashDuration);
         
         isDashing = false; 
-        
-        // Change it back to white (the default color) when the dash ends!
-        spriteRenderer.color = Color.white; 
+
+        // 3. Return to normal animation/sprite state
+        UpdateAnimationState();
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
