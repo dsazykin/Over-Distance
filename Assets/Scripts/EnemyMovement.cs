@@ -10,7 +10,7 @@ public class EnemyMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         // Find the player by component instead of tag
-        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
         if (playerMovement != null)
         {
             player = playerMovement.transform;
