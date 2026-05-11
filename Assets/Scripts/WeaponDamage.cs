@@ -6,8 +6,8 @@ public class WeaponDamage : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Check if the object we hit has an EnemyHealth component
-        EnemyHealth enemy = collision.GetComponent<EnemyHealth>();
+        // Check if the object we hit has an EnemyHealth component (or its parent does)
+        EnemyHealth enemy = collision.GetComponentInParent<EnemyHealth>();
         
         if (enemy != null)
         {
