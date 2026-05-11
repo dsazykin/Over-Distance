@@ -75,10 +75,8 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (moveInput.y > 0)
                 {
-                    // We don't have a Walk Up animation yet, so we turn the animator off
-                    // and just show the static Up picture for now!
-                    animator.enabled = false;
-                    spriteRenderer.sprite = spriteUp;
+                    // Play the Up Walking Animation!
+                    animator.Play("Daniel_Walk_Back"); 
                 }
                 else if (moveInput.y < 0)
                 {
