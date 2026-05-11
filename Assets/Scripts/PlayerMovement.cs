@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections; // We must add this to use Coroutines!
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -37,6 +37,11 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 moveInput;
     
+    // Animator Hashes
+    private static readonly int WalkFrontHash = Animator.StringToHash("Walk_Front");
+    private static readonly int WalkSideHash = Animator.StringToHash("Walk_Side");
+    private static readonly int WalkBackHash = Animator.StringToHash("Walk_Back");
+    
     void Start()
     {
         // Automatically find the Animator that Unity added to your player
@@ -53,45 +58,35 @@ public class PlayerMovement : MonoBehaviour
         moveInput = value.Get<Vector2>();
         movement = moveInput;
 
-        // ARE WE MOVING?
         if (moveInput != Vector2.zero)
         {
             lastMovement = moveInput;
-            
-            // Turn on the animation engine!
             animator.enabled = true; 
 
-            // Are we moving horizontally more than vertically?
+            // Horizontal movement priority
             if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
             {
-                // Play the Side Walking Animation!
-                animator.Play("Walk_Side"); 
+                animator.Play(WalkSideHash); 
 
-                // FLIP LOGIC
                 if (moveInput.x > 0) spriteRenderer.flipX = false; 
                 else if (moveInput.x < 0) spriteRenderer.flipX = true;  
             }
-            else // We are moving vertically
+            else // Vertical movement
             {
                 if (moveInput.y > 0)
                 {
-                    // Play the Up Walking Animation!
-                    animator.Play("Walk_Back"); 
+                    animator.Play(WalkBackHash);
                 }
                 else if (moveInput.y < 0)
                 {
-                    // Play the Down Walking Animation!
-                    animator.Play("Walk_Front"); 
+                    animator.Play(WalkFrontHash); 
                 }
             }
         }
         else 
         {
-            // WE STOPPED MOVING!
-            // 1. Turn off the animation engine
             animator.enabled = false; 
 
-            // 2. Look at which way we were facing last, and show that static picture
             if (Mathf.Abs(lastMovement.x) > Mathf.Abs(lastMovement.y))
             {
                 spriteRenderer.sprite = spriteSide;
