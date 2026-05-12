@@ -15,6 +15,10 @@ public class EnemyDamage : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+        // If the collider is a trigger (like the player's weapon hitbox), ignore it!
+        // We only want to take damage if the enemy touches the player's body.
+        if (collision.isTrigger) return;
+
         PlayerHealth playerHealth = collision.GetComponentInParent<PlayerHealth>();
         if (playerHealth != null)
         {
