@@ -47,6 +47,10 @@ public class PlayerMovement : MonoBehaviour
     private static readonly int WalkSideHash = Animator.StringToHash("Walk_Side");
     private static readonly int WalkBackHash = Animator.StringToHash("Walk_Back");
     
+    private static readonly int AttackFrontHash = Animator.StringToHash("Attack_Front");
+    private static readonly int AttackSideHash = Animator.StringToHash("Attack_Side");
+    // private static readonly int AttackBackHash = Animator.StringToHash("Attack_Back");
+    
     void Start()
     {
         // Automatically find the Animator that Unity added to your player
@@ -171,6 +175,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator PerformAttack() {
         isAttacking = true;
+        animator.enabled = true;
 
         // 1. Move the hitbox to face the correct direction!
         // We use lastMovement.normalized to get a clean direction (Up, Down, Left, or Right)
@@ -178,9 +183,11 @@ public class PlayerMovement : MonoBehaviour
         if (lastMovement.x == 0) {
             if (lastMovement.y > 0) {
                 weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 90f); // Rotate the hitbox to be vertical
+                // animator.Play(AttackBackHash);
             }
             else if (lastMovement.y < 0) {
                 weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -90f); // Rotate the hitbox to be vertical
+                animator.Play(AttackFrontHash);
             }
             
             weaponHitbox.transform.localPosition = new Vector3(0f, lastMovement.y, 0f).normalized * 0.7f;
@@ -188,9 +195,13 @@ public class PlayerMovement : MonoBehaviour
         } else if ( lastMovement.y == 0){
             if (lastMovement.x > 0) {
                 weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 0f); // Rotate the hitbox to be vertical
+                animator.Play(AttackSideHash);
+                spriteRenderer.flipX = false;
             }
             else if (lastMovement.x < 0) {
                 weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 180f); // Rotate the hitbox to be vertical
+                animator.Play(AttackSideHash);
+                spriteRenderer.flipX = true;
             }
             
             weaponHitbox.transform.localPosition = new Vector3(lastMovement.x, 0f, 0f).normalized * 0.7f;
@@ -199,18 +210,24 @@ public class PlayerMovement : MonoBehaviour
             if (Mathf.Abs(lastMovement.x) > Mathf.Abs(lastMovement.y)) {
                 if (lastMovement.x > 0) {
                     weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                    animator.Play(AttackSideHash);
+                    spriteRenderer.flipX = false;
                 }
                 else if (lastMovement.x < 0) {
                     weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -180f);
+                    animator.Play(AttackSideHash);
+                    spriteRenderer.flipX = true;
                 }
                 weaponHitbox.transform.localPosition = new Vector3(lastMovement.x, 0f, 0f).normalized * 0.7f;
             }
             else {
                 if (lastMovement.y > 0) {
                     weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+                    // animator.Play(AttackBackHash);
                 }
                 else if (lastMovement.y < 0) {
                     weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -90f);
+                    animator.Play(AttackFrontHash);
                 }
                 weaponHitbox.transform.localPosition = new Vector3(0f, lastMovement.y, 0f).normalized * 0.7f;
             }
@@ -226,6 +243,9 @@ public class PlayerMovement : MonoBehaviour
         weaponHitbox.SetActive(false);
 
         isAttacking = false;
+        
+        // Return to normal animation/sprite state
+        UpdateAnimationState();
     }
     
 }
