@@ -6,6 +6,10 @@ public class EnemyMovement : MonoBehaviour
     private Transform player;
     private Rigidbody2D rb;
 
+    [Header("Knockback Settings")]
+    public float knockbackDuration = 0.2f;
+    private bool isKnockedBack = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -17,9 +21,30 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    public void ApplyKnockback(float force, Vector2 direction)
+    {
+        if (!isKnockedBack)
+        {
+            StartCoroutine(KnockbackRoutine(force, direction));
+        }
+    }
+
+    private System.Collections.IEnumerator KnockbackRoutine(float force, Vector2 direction)
+    {
+        isKnockedBack = true;
+        
+        // We use velocity for the knockback burst
+        rb.velocity = direction * force;
+        
+        yield return new WaitForSeconds(knockbackDuration);
+        
+        rb.velocity = Vector2.zero;
+        isKnockedBack = false;
+    }
+
     void FixedUpdate()
     {
-        if (player != null)
+        if (player != null && !isKnockedBack)
         {
             // Simple follow logic
             Vector2 direction = (player.position - transform.position).normalized;
