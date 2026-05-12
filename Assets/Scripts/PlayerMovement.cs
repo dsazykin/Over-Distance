@@ -135,6 +135,11 @@ public class PlayerMovement : MonoBehaviour
             return; // This stops the rest of the FixedUpdate code from running
         }
 
+        // Stop movement while attacking
+        if (isAttacking) {
+            return;
+        }
+
         // Normal walking movement
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
