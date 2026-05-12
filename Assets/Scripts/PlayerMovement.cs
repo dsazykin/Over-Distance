@@ -67,8 +67,8 @@ public class PlayerMovement : MonoBehaviour
         moveInput = value.Get<Vector2>();
         movement = moveInput;
 
-        // Only update animations if we aren't currently dashing
-        if (!isDashing)
+        // Only update animations if we aren't currently dashing or attacking
+        if (!isDashing && !isAttacking)
         {
             UpdateAnimationState();
         }
@@ -180,7 +180,9 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator PerformAttack() {
         isAttacking = true;
-        // animator.enabled = true;
+        
+        // Disable animator while the attack is active to prevent walk cycles
+        animator.enabled = false;
 
         // 1. Move the hitbox to face the correct direction!
         // We use lastMovement.normalized to get a clean direction (Up, Down, Left, or Right)
@@ -250,7 +252,7 @@ public class PlayerMovement : MonoBehaviour
         isAttacking = false;
         
         // Return to normal animation/sprite state
-        // UpdateAnimationState();
+        UpdateAnimationState();
     }
     
 }
