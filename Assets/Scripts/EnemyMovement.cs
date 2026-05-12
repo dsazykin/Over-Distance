@@ -1,10 +1,18 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class EnemyMovement : MonoBehaviour
 {
     public float moveSpeed = 2f;
     private Transform player;
     private Rigidbody2D rb;
+
+    [Header("Pathfinding Settings")]
+    public float pathUpdateInterval = 0.2f;
+    public float waypointThreshold = 0.2f;
+    private Pathfinding pathfinding;
+    private List<Vector2> currentPath;
+    private int targetIndex;
 
     [Header("Knockback Settings")]
     public float knockbackDuration = 0.2f;
@@ -13,11 +21,33 @@ public class EnemyMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        // Find the player by component instead of tag
+        
+        // Find the player
         PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
         if (playerMovement != null)
         {
             player = playerMovement.transform;
+        }
+
+        // Find the pathfinding manager in the scene
+        pathfinding = FindFirstObjectByType<Pathfinding>();
+
+        if (pathfinding != null && player != null)
+        {
+            StartCoroutine(UpdatePathRoutine());
+        }
+    }
+
+    private System.Collections.IEnumerator UpdatePathRoutine()
+    {
+        while (true)
+        {
+            if (!isKnockedBack && player != null)
+            {
+                currentPath = pathfinding.FindPath(transform.position, player.position);
+                targetIndex = 0;
+            }
+            yield return new WaitForSeconds(pathUpdateInterval);
         }
     }
 
@@ -44,11 +74,21 @@ public class EnemyMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (player != null && !isKnockedBack)
+        if (isKnockedBack || player == null || currentPath == null || targetIndex >= currentPath.Count)
         {
-            // Simple follow logic
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
+            return;
+        }
+
+        // Follow the current path
+        Vector2 targetWaypoint = currentPath[targetIndex];
+        Vector2 direction = (targetWaypoint - (Vector2)transform.position).normalized;
+        
+        rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
+
+        // Check if we reached the current waypoint
+        if (Vector2.Distance(transform.position, targetWaypoint) < waypointThreshold)
+        {
+            targetIndex++;
         }
     }
 }
