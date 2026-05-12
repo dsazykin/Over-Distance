@@ -128,3 +128,6 @@ $RECYCLE.BIN/
 # JetBrains Rider / IDE Specifics
 .idea/
 *.sln.ide/
+
+# Gemini CLI Memory
+GEMINI.md
