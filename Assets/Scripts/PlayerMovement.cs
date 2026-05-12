@@ -192,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (lastMovement.y < 0) {
                 weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -90f); // Rotate the hitbox to be vertical
-                animator.Play(AttackFrontHash);
+                // animator.Play(AttackFrontHash);
             }
             
             weaponHitbox.transform.localPosition = new Vector3(0f, lastMovement.y, 0f).normalized * 0.7f;
@@ -200,13 +200,13 @@ public class PlayerMovement : MonoBehaviour
         } else if ( lastMovement.y == 0){
             if (lastMovement.x > 0) {
                 weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 0f); // Rotate the hitbox to be vertical
-                animator.Play(AttackSideHash);
-                spriteRenderer.flipX = false;
+                // animator.Play(AttackSideHash);
+                // spriteRenderer.flipX = false;
             }
             else if (lastMovement.x < 0) {
                 weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 180f); // Rotate the hitbox to be vertical
-                animator.Play(AttackSideHash);
-                spriteRenderer.flipX = true;
+                // animator.Play(AttackSideHash);
+                // spriteRenderer.flipX = true;
             }
             
             weaponHitbox.transform.localPosition = new Vector3(lastMovement.x, 0f, 0f).normalized * 0.7f;
@@ -215,13 +215,13 @@ public class PlayerMovement : MonoBehaviour
             if (Mathf.Abs(lastMovement.x) > Mathf.Abs(lastMovement.y)) {
                 if (lastMovement.x > 0) {
                     weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                    animator.Play(AttackSideHash);
-                    spriteRenderer.flipX = false;
+                    // animator.Play(AttackSideHash);
+                    // spriteRenderer.flipX = false;
                 }
                 else if (lastMovement.x < 0) {
                     weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -180f);
-                    animator.Play(AttackSideHash);
-                    spriteRenderer.flipX = true;
+                    // animator.Play(AttackSideHash);
+                    // spriteRenderer.flipX = true;
                 }
                 weaponHitbox.transform.localPosition = new Vector3(lastMovement.x, 0f, 0f).normalized * 0.7f;
             }
@@ -232,7 +232,7 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else if (lastMovement.y < 0) {
                     weaponHitbox.transform.localRotation = Quaternion.Euler(0f, 0f, -90f);
-                    animator.Play(AttackFrontHash);
+                    // animator.Play(AttackFrontHash);
                 }
                 weaponHitbox.transform.localPosition = new Vector3(0f, lastMovement.y, 0f).normalized * 0.7f;
             }
