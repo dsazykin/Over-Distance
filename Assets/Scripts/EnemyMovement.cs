@@ -34,11 +34,11 @@ public class EnemyMovement : MonoBehaviour
         isKnockedBack = true;
         
         // We use velocity for the knockback burst
-        rb.velocity = direction * force;
+        rb.linearVelocity = direction * force;
         
         yield return new WaitForSeconds(knockbackDuration);
         
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         isKnockedBack = false;
     }
 
