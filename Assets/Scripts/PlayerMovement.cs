@@ -180,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator PerformAttack() {
         isAttacking = true;
-        animator.enabled = true;
+        // animator.enabled = true;
 
         // 1. Move the hitbox to face the correct direction!
         // We use lastMovement.normalized to get a clean direction (Up, Down, Left, or Right)
@@ -250,7 +250,7 @@ public class PlayerMovement : MonoBehaviour
         isAttacking = false;
         
         // Return to normal animation/sprite state
-        UpdateAnimationState();
+        // UpdateAnimationState();
     }
     
 }
