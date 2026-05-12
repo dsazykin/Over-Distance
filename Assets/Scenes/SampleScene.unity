@@ -813,7 +813,7 @@ MonoBehaviour:
   dashSpriteUp: {fileID: 7899463268015020207, guid: f66ab9c2035e666439fd489ef2cf13bb, type: 3}
   dashSpriteSide: {fileID: 294674276645480053, guid: 70d381877bb0c0b4e8320d7a0e4bb657, type: 3}
   weaponHitbox: {fileID: 1902821589}
-  attackDuration: 0.15
+  attackDuration: 0.83
 --- !u!212 &572412060
 SpriteRenderer:
   serializedVersion: 2
