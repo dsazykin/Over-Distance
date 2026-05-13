@@ -3,6 +3,12 @@ using UnityEngine;
 public class EnemyDamage : MonoBehaviour
 {
     public int damage = 10;
+    private int hurtboxLayer;
+
+    private void Start()
+    {
+        hurtboxLayer = LayerMask.NameToLayer("Hurtbox");
+    }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -15,14 +21,16 @@ public class EnemyDamage : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        // If the collider is a trigger (like the player's weapon hitbox), ignore it!
-        // We only want to take damage if the enemy touches the player's body.
-        if (collision.isTrigger) return;
-
-        PlayerHealth playerHealth = collision.GetComponentInParent<PlayerHealth>();
-        if (playerHealth != null)
+        // Only apply damage if the collider is on the Hurtbox layer.
+        // This prevents the enemy from taking damage from (or being blocked by) 
+        // the player's weapon hitbox or other triggers.
+        if (collision.gameObject.layer == hurtboxLayer)
         {
-            playerHealth.TakeDamage(damage);
+            PlayerHealth playerHealth = collision.GetComponentInParent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage);
+            }
         }
     }
 }
