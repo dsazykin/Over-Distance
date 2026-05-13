@@ -12,6 +12,7 @@ public class PlayerHealth : MonoBehaviour
     public float flickerDuration = 1f;
     public float flickerInterval = 0.1f;
     private Coroutine flickerCoroutine;
+    public Sprite spriteUp;
 
     void Start()
     {
@@ -62,14 +63,27 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player Died!");
-        // For now, let's just disable the player movement
+
+        // 1. Stop visual flickering and ensure sprite is visible
+        if (flickerCoroutine != null) StopCoroutine(flickerCoroutine);
+        spriteRenderer.enabled = true;
+
+        // 2. Disable movement
         PlayerMovement movement = GetComponent<PlayerMovement>();
         if (movement != null)
         {
             movement.enabled = false;
         }
+
+        // 3. Disable the Animator to stop all animations
+        Animator animator = GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.enabled = false;
+        }
         
-        // Maybe change color to gray or something to indicate death
+        // 4. Tint the character gray to indicate death
+        spriteRenderer.sprite = spriteUp; // In the future this will play the death animation
         spriteRenderer.color = Color.gray;
         
         // In a real game, you'd trigger a Game Over screen or reload the scene

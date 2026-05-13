@@ -1002,9 +1002,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
   currentHealth: 0
-  iFrameDuration: 1
   spriteRenderer: {fileID: 0}
+  flickerDuration: 1
   flickerInterval: 0.1
+  spriteUp: {fileID: -4760862801754791655, guid: 028d2f1bdf2edde42b589e2ca005e140, type: 3}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,6 +1214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDamage
   damage: 10
+  damageCooldown: 1
 --- !u!114 &839908304
 MonoBehaviour:
   m_ObjectHideFlags: 0
