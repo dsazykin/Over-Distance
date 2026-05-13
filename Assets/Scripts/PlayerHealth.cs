@@ -7,13 +7,11 @@ public class PlayerHealth : MonoBehaviour
     public int maxHealth = 100;
     public int currentHealth;
 
-    [Header("I-Frames")]
-    public float iFrameDuration = 1f;
-    private bool isInvulnerable = false;
-
     [Header("Visuals")]
     public SpriteRenderer spriteRenderer;
+    public float flickerDuration = 1f;
     public float flickerInterval = 0.1f;
+    private Coroutine flickerCoroutine;
 
     void Start()
     {
@@ -27,7 +25,8 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isInvulnerable) return;
+        // We no longer return early here because enemies handle their own cooldowns.
+        // This allows multiple enemies to hit the player in quick succession.
 
         currentHealth -= damage;
         Debug.Log($"Player took {damage} damage. Current Health: {currentHealth}");
@@ -39,17 +38,17 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
-            StartCoroutine(HandleIFrames());
+            // Trigger visual feedback
+            if (flickerCoroutine != null) StopCoroutine(flickerCoroutine);
+            flickerCoroutine = StartCoroutine(HandleFlicker());
         }
     }
 
-    private IEnumerator HandleIFrames()
+    private IEnumerator HandleFlicker()
     {
-        isInvulnerable = true;
-        
-        // Visual feedback: Flickering
+        // Visual feedback only - no longer grants logic-based invulnerability
         float timer = 0;
-        while (timer < iFrameDuration)
+        while (timer < flickerDuration)
         {
             spriteRenderer.enabled = !spriteRenderer.enabled;
             yield return new WaitForSeconds(flickerInterval);
@@ -57,7 +56,7 @@ public class PlayerHealth : MonoBehaviour
         }
         
         spriteRenderer.enabled = true;
-        isInvulnerable = false;
+        flickerCoroutine = null;
     }
 
     private void Die()
