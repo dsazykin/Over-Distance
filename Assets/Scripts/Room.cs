@@ -3,8 +3,14 @@ using UnityEngine;
 public class Room : MonoBehaviour
 {
     [Header("Room Info")]
-    public Vector2 gridPos; // Grid coordinate (e.g. 0,0 or 1,0)
+    public Vector2 gridPos;
     
+    [Header("Exits")]
+    public bool hasNorth;
+    public bool hasSouth;
+    public bool hasEast;
+    public bool hasWest;
+
     [Header("Camera Constraints")]
     public float minX;
     public float maxX;
@@ -27,7 +33,7 @@ public class Room : MonoBehaviour
         }
 
         // Reset all parallax layers to prevent jumps
-        ParallaxBackground[] parallaxLayers = FindObjectsByType<ParallaxBackground>(FindObjectsSortMode.None);
+        ParallaxBackground[] parallaxLayers = Object.FindObjectsByType<ParallaxBackground>(FindObjectsSortMode.None);
         foreach (var layer in parallaxLayers)
         {
             layer.ResetParallax();
