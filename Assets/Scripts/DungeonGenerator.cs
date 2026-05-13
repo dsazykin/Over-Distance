@@ -30,16 +30,91 @@ public class DungeonGenerator : MonoBehaviour
 
     void GenerateDungeon()
     {
-        // For now, let's just spawn the start room at 0,0
-        // Phase 2 will involve the full branching algorithm
-        SpawnRoom(Vector2.zero, startRoomPrefab);
-        
-        // Finalize A* grid after rooms are placed
+        // 1. Spawn the Start Room
+        Room startRoom = SpawnRoom(Vector2.zero, startRoomPrefab);
+        startRoom.OnPlayerEnter(); // Set initial camera limits
+
+        Queue<Vector2> roomQueue = new Queue<Vector2>();
+        roomQueue.Enqueue(Vector2.zero);
+
+        int roomsSpawned = 1;
+
+        // 2. Branch out from the start room
+        while (roomQueue.Count > 0 && roomsSpawned < maxRooms)
+        {
+            Vector2 currentPos = roomQueue.Dequeue();
+            Room currentRoom = dungeonGrid[currentPos];
+
+            // Try to spawn neighbors in each available direction
+            if (currentRoom.hasNorth) TrySpawnNeighbor(currentPos + Vector2.up, Door.DoorDirection.North, ref roomsSpawned, roomQueue);
+            if (currentRoom.hasSouth) TrySpawnNeighbor(currentPos + Vector2.down, Door.DoorDirection.South, ref roomsSpawned, roomQueue);
+            if (currentRoom.hasEast)  TrySpawnNeighbor(currentPos + Vector2.right, Door.DoorDirection.East, ref roomsSpawned, roomQueue);
+            if (currentRoom.hasWest)  TrySpawnNeighbor(currentPos + Vector2.left, Door.DoorDirection.West, ref roomsSpawned, roomQueue);
+        }
+
+        // 3. Seal any doors that don't lead anywhere
+        SealUnconnectedDoors();
+
+        // 4. Finalize A* grid
         PathGrid pathGrid = Object.FindFirstObjectByType<PathGrid>();
         if (pathGrid != null)
         {
-            // We'll need to make sure PathGrid is updated to scan the whole generated area
-            // pathGrid.GenerateGrid(); 
+             // pathGrid.GenerateGrid(); 
+        }
+    }
+
+    void TrySpawnNeighbor(Vector2 targetPos, Door.DoorDirection fromDirection, ref int roomsSpawned, Queue<Vector2> queue)
+    {
+        if (dungeonGrid.ContainsKey(targetPos) || roomsSpawned >= maxRooms) return;
+
+        // Find all prefabs that have the REQUIRED connecting door
+        List<GameObject> validPrefabs = new List<GameObject>();
+        foreach (var prefab in roomPrefabs)
+        {
+            Room roomScript = prefab.GetComponent<Room>();
+            bool hasRequiredDoor = false;
+            
+            // If we are moving North, the new room must have a South door to connect back
+            switch (fromDirection)
+            {
+                case Door.DoorDirection.North: hasRequiredDoor = roomScript.hasSouth; break;
+                case Door.DoorDirection.South: hasRequiredDoor = roomScript.hasNorth; break;
+                case Door.DoorDirection.East:  hasRequiredDoor = roomScript.hasWest; break;
+                case Door.DoorDirection.West:  hasRequiredDoor = roomScript.hasEast; break;
+            }
+
+            if (hasRequiredDoor) validPrefabs.Add(prefab);
+        }
+
+        if (validPrefabs.Count > 0)
+        {
+            GameObject randomPrefab = validPrefabs[Random.Range(0, validPrefabs.Count)];
+            SpawnRoom(targetPos, randomPrefab);
+            roomsSpawned++;
+            queue.Enqueue(targetPos);
+        }
+    }
+
+    void SealUnconnectedDoors()
+    {
+        foreach (var entry in dungeonGrid)
+        {
+            Vector2 pos = entry.Key;
+            Room room = entry.Value;
+
+            if (room.hasNorth && !dungeonGrid.ContainsKey(pos + Vector2.up)) SealDoor(room.northDoor);
+            if (room.hasSouth && !dungeonGrid.ContainsKey(pos + Vector2.down)) SealDoor(room.southDoor);
+            if (room.hasEast && !dungeonGrid.ContainsKey(pos + Vector2.right)) SealDoor(room.eastDoor);
+            if (room.hasWest && !dungeonGrid.ContainsKey(pos + Vector2.left)) SealDoor(room.westDoor);
+        }
+    }
+
+    void SealDoor(Door door)
+    {
+        if (door != null && wallBlockPrefab != null)
+        {
+            Instantiate(wallBlockPrefab, door.transform.position, Quaternion.identity, door.transform.parent);
+            door.gameObject.SetActive(false);
         }
     }
 
