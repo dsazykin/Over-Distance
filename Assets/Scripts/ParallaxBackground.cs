@@ -3,28 +3,37 @@ using UnityEngine;
 public class ParallaxBackground : MonoBehaviour
 {
     [Header("Parallax Settings")]
-    [Tooltip("How fast this layer moves. 0 is still (sky), 1 moves exactly with the camera.")]
+    [Tooltip("How fast this layer moves horizontally. 0 is still (sky), 1 moves exactly with the camera.")]
     public float parallaxSpeed; 
     
     private Transform cameraTransform;
-    private Vector3 lastCameraPosition;
+    private float lastCameraX;
+    private float offsetFromCameraY;
 
     void Start()
     {
-        // Find the main camera
         cameraTransform = Camera.main.transform;
-        lastCameraPosition = cameraTransform.position;
+        lastCameraX = cameraTransform.position.x;
+        
+        // Save how far we are from the camera vertically at the start
+        offsetFromCameraY = transform.position.y - cameraTransform.position.y;
     }
 
     void LateUpdate()
     {
-        // Calculate how much the camera moved since last frame
-        Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
-        
-        // Move this background layer slightly based on its unique speed
-        transform.position += deltaMovement * parallaxSpeed;
-        
-        // Save the camera's new position for the next frame
-        lastCameraPosition = cameraTransform.position;
+        // 1. Handle Horizontal Parallax
+        float deltaX = cameraTransform.position.x - lastCameraX;
+        transform.position += new Vector3(deltaX * parallaxSpeed, 0f, 0f);
+        lastCameraX = cameraTransform.position.x;
+
+        // 2. Lock Vertical Position to Camera
+        // This ensures the sky stays at the same relative height in every room
+        transform.position = new Vector3(transform.position.x, cameraTransform.position.y + offsetFromCameraY, transform.position.z);
+    }
+
+    // Call this when the player moves between rooms to prevent the background from jumping
+    public void ResetParallax()
+    {
+        lastCameraX = cameraTransform.position.x;
     }
 }
