@@ -4,15 +4,17 @@ using System.Collections.Generic;
 
 public class Pathfinding : MonoBehaviour
 {
-    PathGrid grid;
+    private PathGrid grid;
 
-    void Awake()
+    public void SetGrid(PathGrid newGrid)
     {
-        grid = GetComponent<PathGrid>();
+        grid = newGrid;
     }
 
     public List<Vector2> FindPath(Vector2 startPos, Vector2 targetPos)
     {
+        if (grid == null) return null;
+
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
 

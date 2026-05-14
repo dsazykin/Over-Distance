@@ -23,18 +23,27 @@ public class EnemyMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         
         // Find the player
-        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
+        PlayerMovement playerMovement = Object.FindFirstObjectByType<PlayerMovement>();
         if (playerMovement != null)
         {
             player = playerMovement.transform;
         }
 
-        // Find the pathfinding manager in the scene
-        pathfinding = FindFirstObjectByType<Pathfinding>();
-
-        if (pathfinding != null && player != null)
+        // Add a Pathfinding component if this enemy doesn't have one
+        pathfinding = GetComponent<Pathfinding>();
+        if (pathfinding == null)
         {
-            StartCoroutine(UpdatePathRoutine());
+            pathfinding = gameObject.AddComponent<Pathfinding>();
+        }
+
+        StartCoroutine(UpdatePathRoutine());
+    }
+
+    public void UpdatePathfindingGrid(PathGrid newGrid)
+    {
+        if (pathfinding != null)
+        {
+            pathfinding.SetGrid(newGrid);
         }
     }
 
@@ -42,7 +51,7 @@ public class EnemyMovement : MonoBehaviour
     {
         while (true)
         {
-            if (!isKnockedBack && player != null)
+            if (!isKnockedBack && player != null && pathfinding != null)
             {
                 currentPath = pathfinding.FindPath(transform.position, player.position);
                 targetIndex = 0;

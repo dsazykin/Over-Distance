@@ -23,20 +23,30 @@ public class Room : MonoBehaviour
     public Door eastDoor;
     public Door westDoor;
 
+    [Header("Pathfinding")]
+    public PathGrid localGrid;
+
     public void OnPlayerEnter()
     {
-        // Tell the camera to constrain itself to this room
+        // 1. Tell the camera to constrain itself to this room
         CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
         if (cam != null)
         {
             cam.SetRoomLimits(minX, maxX, minY, maxY);
         }
 
-        // Reset all parallax layers to prevent jumps
+        // 2. Reset all parallax layers to prevent jumps
         ParallaxBackground[] parallaxLayers = Object.FindObjectsByType<ParallaxBackground>(FindObjectsSortMode.None);
         foreach (var layer in parallaxLayers)
         {
             layer.ResetParallax();
+        }
+
+        // 3. Update all enemies to use this room's grid
+        EnemyMovement[] enemies = Object.FindObjectsByType<EnemyMovement>(FindObjectsSortMode.None);
+        foreach (var enemy in enemies)
+        {
+            enemy.UpdatePathfindingGrid(localGrid);
         }
     }
 }

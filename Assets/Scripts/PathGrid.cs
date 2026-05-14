@@ -6,7 +6,6 @@ public class PathGrid : MonoBehaviour
     public LayerMask unwalkableMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
-    public bool anchorToBottomLeft = false; // Toggle to switch between Center-based and Corner-based
     
     Node[,] grid;
     float nodeDiameter;
@@ -20,22 +19,12 @@ public class PathGrid : MonoBehaviour
         CreateGrid();
     }
 
-    void CreateGrid()
+    public void CreateGrid()
     {
         grid = new Node[gridSizeX, gridSizeY];
         
-        // Calculate the starting point. 
-        // If anchored to Bottom Left, the GameObject's position IS the bottom left.
-        // Otherwise, the GameObject's position is the center.
-        Vector2 worldBottomLeft;
-        if (anchorToBottomLeft)
-        {
-            worldBottomLeft = (Vector2)transform.position;
-        }
-        else
-        {
-            worldBottomLeft = (Vector2)transform.position - Vector2.right * gridWorldSize.x / 2 - Vector2.up * gridWorldSize.y / 2;
-        }
+        // Local center-based grid creation
+        Vector2 worldBottomLeft = (Vector2)transform.position - Vector2.right * gridWorldSize.x / 2 - Vector2.up * gridWorldSize.y / 2;
 
         for (int x = 0; x < gridSizeX; x++)
         {
@@ -43,13 +32,25 @@ public class PathGrid : MonoBehaviour
             {
                 Vector2 worldPoint = worldBottomLeft + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
                 
-                // We use a slightly smaller radius (90% of nodeRadius) for the physics check.
-                // This prevents "grazing" a wall from marking the whole node as unwalkable.
+                // 90% radius check for cleaner wall detection
                 bool walkable = !(Physics2D.OverlapCircle(worldPoint, nodeRadius * 0.9f, unwalkableMask));
                 
                 grid[x, y] = new Node(walkable, worldPoint, x, y);
             }
         }
+    }
+
+    public Node NodeFromWorldPoint(Vector2 worldPosition)
+    {
+        float percentX = (worldPosition.x - transform.position.x) / gridWorldSize.x + 0.5f;
+        float percentY = (worldPosition.y - transform.position.y) / gridWorldSize.y + 0.5f;
+
+        percentX = Mathf.Clamp01(percentX);
+        percentY = Mathf.Clamp01(percentY);
+
+        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
+        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+        return grid[x, y];
     }
 
     public List<Node> GetNeighbors(Node node)
@@ -75,39 +76,9 @@ public class PathGrid : MonoBehaviour
         return neighbors;
     }
 
-    public Node NodeFromWorldPoint(Vector2 worldPosition)
-    {
-        float percentX, percentY;
-
-        if (anchorToBottomLeft)
-        {
-            percentX = (worldPosition.x - transform.position.x) / gridWorldSize.x;
-            percentY = (worldPosition.y - transform.position.y) / gridWorldSize.y;
-        }
-        else
-        {
-            percentX = (worldPosition.x - transform.position.x) / gridWorldSize.x + 0.5f;
-            percentY = (worldPosition.y - transform.position.y) / gridWorldSize.y + 0.5f;
-        }
-
-        percentX = Mathf.Clamp01(percentX);
-        percentY = Mathf.Clamp01(percentY);
-
-        int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
-        int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
-        return grid[x, y];
-    }
-
     void OnDrawGizmos()
     {
-        if (anchorToBottomLeft)
-        {
-            Gizmos.DrawWireCube((Vector2)transform.position + gridWorldSize / 2, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));
-        }
-        else
-        {
-            Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));
-        }
+        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, gridWorldSize.y, 1));
 
         if (grid != null)
         {
