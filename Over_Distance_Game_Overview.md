@@ -6,64 +6,70 @@
 ### Key Technologies:
 *   **Input:** Unity New Input System (Action-based).
 *   **Physics:** 2D Physics engine with a custom Layer Collision Matrix for phasing.
-*   **Pathfinding:** Custom A* Grid-based system for obstacle avoidance.
-*   **Rendering:** URP 2D, Sprite Lit shaders, and multi-layered Parallax.
-*   **Architecture:** Component-based with a focus on decoupling through interface-like component checks (`GetComponentInParent`).
+*   **Procedural Generation:** Prefab-based room generation with camera-slide transitions and dynamic boundary clamping.
+*   **Pathfinding:** Modular, per-room A* Grid-based system for decentralized navigation.
+*   **Rendering:** URP 2D, Sprite Lit shaders, and multi-layered Parallax with Y-axis locking.
 
 ---
 
 ## Technical Architecture
 
-### 1. Player Systems
+### 1. World & Generation Systems
 
-#### Movement & Dash (`PlayerMovement.cs`)
-*   **Physics:** Movement is handled in `FixedUpdate` using `Rigidbody2D.MovePosition`. This ensures frame-rate independent movement that respects the physics engine's collision constraints.
-*   **Input Handling:** Uses `OnMove` and `OnDash` callbacks from the Input System.
-*   **Movement Lock:** Movement and walking animations are locked while `isAttacking` or `isDashing` is true.
-*   **Direction Persistence:** `lastMovement` (Vector2) stores the last non-zero movement vector to determine facing direction for idles, dashes, and weapon hitbox placement.
-*   **Dash Logic:** A Coroutine-based dash (`PerformDash`) that:
-    1. Temporarily overrides `FixedUpdate` movement logic.
-    2. Switches the `SpriteRenderer.sprite` to a directional dash pose (`dashSpriteDown`, etc.).
-    3. Toggles `animator.enabled` to prevent animation states from overriding the static dash sprite.
-    4. Restores state via `UpdateAnimationState()` upon completion.
+#### Procedural Dungeon Generator (`DungeonGenerator.cs` + `Room.cs`)
+*   **Layout Algorithm:** A branching queue-based algorithm that places pre-authored Room prefabs on a virtual grid. It uses a `Dictionary<Vector2, Room>` to manage grid positions and prevent overlaps.
+*   **Room Anatomy:** Every room prefab is a self-contained unit featuring its own `PathGrid`, `Tilemap` layers, and directional `Door` triggers.
+*   **Exit Sealing:** Post-generation, the system iterates through all spawned rooms and instantiates `wallBlockPrefab` objects over any unconnected exits to ensure the play area is fully enclosed.
 
-#### Combat (`PlayerMovement.cs` + `WeaponDamage.cs`)
-*   **Attack Execution:** `PerformAttack` coroutine handles the combat sequence:
-    1. Locks movement and disables the animator (current implementation uses static poses due to broken animations).
-    2. Rotates and positions the `weaponHitbox` based on `lastMovement`.
-    3. Activates the hitbox trigger for a defined `attackDuration`.
-    4. Restores the animator and movement state on completion.
-*   **Hit Detection:** `WeaponDamage.cs` passes `damageAmount`, `knockbackForce`, and the weapon's `transform.position` to the target's `EnemyHealth` component.
+#### Room Transitions & Camera Management (`Door.cs` + `CameraFollow.cs`)
+*   **Transition Logic:** `Door.cs` triggers a call to `DungeonGenerator.TransitionToRoom`. The player is teleported to a specific `spawnPoint` in the target room, calculated to be the opposite of their exit direction (e.g., exiting North teleports you to the South door's spawn).
+*   **Dynamic Clamping:** The `CameraFollow` script utilizes a `SetRoomLimits` method. When entering a room, `Room.OnPlayerEnter()` provides the specific `minX/maxX` and `minY/maxY` values for that layout. This allows the camera to follow the player while preventing it from ever showing the empty "void" outside the room's walls.
 
-#### Health & Survival (`PlayerHealth.cs`)
-*   **Damage Flow:** `TakeDamage(int)` handles health subtraction and triggers the `HandleIFrames` coroutine.
-*   **Invulnerability (I-Frames):** Implemented via a boolean flag and visual flickering (`spriteRenderer.enabled` toggling).
-*   **Death Hook:** Disables `PlayerMovement` and tints the character gray.
+#### Visual Consistency (`ParallaxBackground.cs`)
+*   **Y-Axis Locking:** To prevent the horizon (sky) from moving when the player travels North/South in a top-down view, the parallax logic is locked. The background's Y-position strictly follows the camera's Y plus an initial offset.
+*   **X-Axis Parallax:** Horizontal movement still applies the `parallaxSpeed` multiplier to create depth as the player moves East/West.
+*   **Reset Mechanism:** During high-speed camera slides (room transitions), `ResetParallax()` is called to update the `lastCameraX` reference without moving the background, preventing the layers from "snapping" or flying off-screen.
 
 ---
 
-### 2. Enemy & AI Systems
+### 2. Player Systems
 
-#### A* Pathfinding (`PathGrid.cs`, `Pathfinding.cs`, `EnemyMovement.cs`)
-*   **Grid Management:** `PathGrid.cs` generates a virtual 2D grid over the playable area. Nodes are marked as unwalkable based on a `Physics2D.OverlapCircle` check against an `unwalkableMask`.
-*   **Algorithm:** A custom A* implementation in `Pathfinding.cs` calculates the shortest path between the enemy and the player using G, H, and F costs.
-*   **Navigation:** `EnemyMovement.cs` periodically updates its path (every 0.2s) and follows waypoints sequentially using `Rigidbody2D.MovePosition`.
+#### Movement & Dash (`PlayerMovement.cs`)
+*   **Locomotion:** Handled in `FixedUpdate` using `Rigidbody2D.MovePosition`. This ensures frame-rate independent movement that respects physics constraints.
+*   **Direction Persistence:** `lastMovement` (Vector2) stores the last non-zero movement vector to determine facing direction for idle sprites and weapon hitbox placement.
+*   **Dash Logic:** A Coroutine-based `PerformDash` that:
+    1. Temporarily overrides normal movement logic.
+    2. Switches the `SpriteRenderer` to a specific directional dash pose.
+    3. Disables the `Animator` to prevent walk cycles from overriding the static dash sprite.
+    4. Restores state via `UpdateAnimationState()` upon completion.
 
-#### Modular Knockback System
-*   **Weapon Strength:** Each weapon defines its own `knockbackForce` in `WeaponDamage.cs`.
-*   **Enemy Resistance:** `EnemyHealth.cs` features a `knockbackResistance` slider (0 to 1). 
-*   **Calculation:** `finalForce = weaponKnockback * (1 - enemyResistance)`.
-*   **Execution:** `EnemyMovement.ApplyKnockback` triggers a `KnockbackRoutine` that temporarily overrides pathfinding logic with a `Rigidbody2D.linearVelocity` burst.
+#### Combat & Hit Detection (`PlayerMovement.cs` + `WeaponDamage.cs`)
+*   **Attack Execution:** The `PerformAttack` coroutine handles hitbox positioning. It rotates the `weaponHitbox` by 90, 180, or 270 degrees and offsets it by 0.7 units in the `lastMovement` direction.
+*   **Hit Delivery:** `WeaponDamage.cs` uses `OnTriggerEnter2D` to pass `damageAmount` and `knockbackForce` to the target. It calculates the knockback direction using `(enemy.pos - weapon.pos).normalized`.
 
-#### Contact Damage (`EnemyDamage.cs`)
-*   Supports both `OnCollisionStay2D` and `OnTriggerStay2D`.
-*   **Self-Damage Protection:** `OnTriggerStay2D` explicitly ignores trigger colliders (like the player's weapon hitbox) to ensure enemies only damage the player's main body.
+#### Health & Survival (`PlayerHealth.cs`)
+*   **Per-Attacker Cooldowns:** Global invulnerability frames (I-Frames) have been removed. Instead, `EnemyDamage.cs` tracks its own `damageCooldown` (default: 1.0s). This allows multiple enemies to damage the player in quick succession while preventing a single enemy from dealing damage every frame.
+*   **Flicker Logic:** Taking damage triggers a `HandleFlicker` coroutine. To handle rapid hits, any existing flicker coroutine is stopped before a new one starts, ensuring the sprite remains visible after the effect ends.
+
+---
+
+### 3. Enemy & AI Systems
+
+#### Modular A* Pathfinding (`PathGrid.cs`, `Pathfinding.cs`, `EnemyMovement.cs`)
+*   **Local Grid Scanning:** `PathGrid.cs` is attached to every room. On `Awake`, it scans its local area using `Physics2D.OverlapCircle` against an `unwalkableMask` to build a node grid.
+*   **Grid Switching:** When a room transition occurs, `Room.OnPlayerEnter()` iterates through all `EnemyMovement` components in the scene and calls `UpdatePathfindingGrid(localGrid)`.
+*   **Navigation:** Enemies use a custom A* implementation in `Pathfinding.cs` (calculating G, H, and F costs) to find the shortest path, following waypoints with `Rigidbody2D.MovePosition`.
+
+#### Modular Knockback System (`EnemyHealth.cs`)
+*   **Calculation:** `finalForce = weaponKnockback * (1 - enemyResistance)`. 
+*   **Enemy Resistance:** A 0.0 to 1.0 slider on `EnemyHealth.cs` that scales incoming force.
+*   **Execution:** `EnemyMovement.ApplyKnockback` overrides pathfinding for `knockbackDuration`, applying a `linearVelocity` burst in the hit direction.
 
 ---
 
 ## Physics & Layer Configuration
 
-The game utilizes a **Phasing Physics Model**. This allows enemies to pass through the player's physical body while still allowing the player to collide with walls and detect damage.
+The game utilizes a **Phasing Physics Model**. This allows enemies to pass through the player's physical body while still allowing the player to collide with walls and detect damage via a dedicated trigger.
 
 ### Layer Matrix
 | Layer | Description | Collides With |
@@ -75,7 +81,7 @@ The game utilizes a **Phasing Physics Model**. This allows enemies to pass throu
 | **Hurtbox** | Player's "Body" trigger | Enemy |
 
 **Key Physics Logic:**
-*   `Player` vs `Enemy` is **Disabled** in the Physics2D settings.
+*   `Player` vs `Enemy` collision is **Disabled** in Physics2D settings.
 *   Damage is detected when an `Enemy` layer collider enters the `Hurtbox` layer trigger.
 
 ---
@@ -83,14 +89,10 @@ The game utilizes a **Phasing Physics Model**. This allows enemies to pass throu
 ## Optimization & Best Practices
 
 ### Animator Hashes
-To avoid the overhead of string-based lookups in `animator.Play()`, the project uses pre-computed integer hashes:
-```csharp
-private static readonly int WalkFrontHash = Animator.StringToHash("Walk_Front");
-```
-This reduces CPU usage and prevents runtime errors caused by typos in animation state names.
+The project uses `Animator.StringToHash` to pre-calculate integer IDs for all animation states (e.g., `WalkFrontHash`). This avoids the CPU overhead of string comparisons during runtime `animator.Play()` calls.
 
-### Coroutine Management
-Visual feedback systems (Dash, I-Frames, Hit Flashing) are handled via Coroutines to keep the `Update` loops clean and focused on gameplay logic.
+### Component Decoupling
+Systems use `GetComponentInParent` and `FindFirstObjectByType` to interact with one another, ensuring that components like `EnemyHealth` and `EnemyMovement` can be easily swapped or modified without breaking the entire AI pipeline.
 
 ---
 
@@ -98,25 +100,23 @@ Visual feedback systems (Dash, I-Frames, Hit Flashing) are handled via Coroutine
 
 ```
 Assets/
-├── Animations/Daniel/      # .anim clips (Walk_Back, Walk_Front, Walk_Side)
-├── Backgrounds/            # Parallax assets
-├── Scripts/                # Gameplay Logic
-│   ├── PlayerMovement.cs   # Input & Locomotion
-│   ├── PlayerHealth.cs     # Life/Death Logic
-│   ├── Node.cs             # A* Data Structure
-│   ├── PathGrid.cs         # Grid Generation
-│   ├── Pathfinding.cs      # A* Algorithm
-│   ├── EnemyMovement.cs    # AI Navigation & Knockback
-│   ├── EnemyHealth.cs      # Damage & Resistance
-│   ├── WeaponDamage.cs     # Attack & Knockback Delivery
+├── Scripts/                
+│   ├── DungeonGenerator.cs # Procedural grid management
+│   ├── Room.cs             # Room metadata & camera boundaries
+│   ├── Door.cs             # Transition triggers & spawn points
+│   ├── PathGrid.cs         # Room-local A* data structures
+│   ├── EnemyMovement.cs    # AI navigation & knockback override
+│   ├── PlayerMovement.cs   # Input, Locomotion & Dash
+│   ├── PlayerHealth.cs     # Life, Death & Flicker visuals
 │   └── ...
-├── Sprites/Players/Daniel/ # Sprite sheets & Static poses
-└── Settings/               # URP & Input Assets
+├── Animations/Daniel/      # .anim clips (Walk, Attack, etc.)
+├── Sprites/Players/Daniel/ # Sprite sheets & directional poses
+└── Settings/               # URP & Input System assets
 ```
 
 ---
 
 ## Known Limitations & Gaps
-*   **Broken Attack Animations:** The attack animator states are currently bypassed in favor of static poses while the `.anim` files are being debugged.
-*   **UI/HUD:** No visual representation of health or combat status.
+*   **Broken Attack Animations:** Animator states are currently bypassed for attacks in favor of static poses while clips are being debugged.
+*   **UI/HUD:** No visual representation of health or dash cooldowns.
 *   **Audio:** No sound effect or music integration.
