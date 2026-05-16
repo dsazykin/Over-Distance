@@ -13,10 +13,36 @@ public class Pathfinding : MonoBehaviour
 
     public List<Vector2> FindPath(Vector2 startPos, Vector2 targetPos)
     {
-        if (grid == null) return null;
+        if (grid == null) 
+        {
+            Debug.LogError($"Pathfinding on {gameObject.name} has NO GRID assigned!");
+            return null;
+        }
 
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
+
+        // If start or target is unwalkable, find the nearest walkable neighbor
+        if (!startNode.walkable) 
+        {
+            Debug.Log($"{gameObject.name}: Start Node is unwalkable. Finding nearest.");
+            startNode = GetNearestWalkableNode(startNode);
+        }
+        if (!targetNode.walkable) 
+        {
+            Debug.Log($"{gameObject.name}: Target Node is unwalkable. Finding nearest.");
+            targetNode = GetNearestWalkableNode(targetNode);
+        }
+
+        // Final safety check
+        if (startNode == null || !startNode.walkable || targetNode == null || !targetNode.walkable)
+        {
+            Debug.LogWarning($"{gameObject.name}: Pathfinding failed. Start walkable: {startNode?.walkable}, Target walkable: {targetNode?.walkable}");
+            return null;
+        }
+
+        // Reset costs and parents from previous searches (shared Node objects)
+        // grid.ResetNodes();
 
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
@@ -57,6 +83,30 @@ public class Pathfinding : MonoBehaviour
 
                     if (!openSet.Contains(neighbor))
                         openSet.Add(neighbor);
+                }
+            }
+        }
+        return null;
+    }
+
+    private Node GetNearestWalkableNode(Node node)
+    {
+        Queue<Node> queue = new Queue<Node>();
+        HashSet<Node> visited = new HashSet<Node>();
+        queue.Enqueue(node);
+        visited.Add(node);
+
+        while (queue.Count > 0)
+        {
+            Node current = queue.Dequeue();
+            if (current.walkable) return current;
+
+            foreach (Node neighbor in grid.GetNeighbors(current))
+            {
+                if (!visited.Contains(neighbor))
+                {
+                    visited.Add(neighbor);
+                    queue.Enqueue(neighbor);
                 }
             }
         }

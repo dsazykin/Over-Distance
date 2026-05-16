@@ -79,13 +79,39 @@ public class EnemyMovement : MonoBehaviour
     {
         while (true)
         {
-            if (!isKnockedBack && player != null && pathfinding != null)
+            // 1. Wait until we actually have a grid and a player target
+            if (pathfinding != null && player != null)
             {
-                currentPath = pathfinding.FindPath(transform.position, player.position);
-                targetIndex = 0;
+                // 2. Only pathfind if we are in the SAME room as the player
+                // We check this by seeing if the player's position is within our local grid's bounds
+                if (IsPlayerInRoom())
+                {
+                    currentPath = pathfinding.FindPath(transform.position, player.position);
+                    targetIndex = 0;
+                }
+                else
+                {
+                    currentPath = null; // Stay still if player is in another room
+                }
             }
             yield return new WaitForSeconds(pathUpdateInterval);
         }
+    }
+
+    private bool IsPlayerInRoom()
+    {
+        Room myRoom = GetComponentInParent<Room>();
+        if (myRoom == null) return false;
+
+        // Simple check: is the player within the room's camera limits?
+        // (This is a good proxy for "is the player in this room")
+        float x = player.position.x;
+        float y = player.position.y;
+        
+        bool withinX = x > myRoom.transform.position.x + myRoom.minX - 5 && x < myRoom.transform.position.x + myRoom.maxX + 5;
+        bool withinY = y > myRoom.transform.position.y + myRoom.minY - 5 && y < myRoom.transform.position.y + myRoom.maxY + 5;
+        
+        return withinX && withinY;
     }
 
     public void ApplyKnockback(float force, Vector2 direction)
@@ -111,7 +137,12 @@ public class EnemyMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isKnockedBack || player == null || currentPath == null || targetIndex >= currentPath.Count)
+        if (isKnockedBack || player == null)
+        {
+            return;
+        }
+
+        if (currentPath == null || targetIndex >= currentPath.Count)
         {
             return;
         }
