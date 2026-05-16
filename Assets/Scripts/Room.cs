@@ -2,8 +2,11 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
+    public enum RoomType { Start, Combat, Treasure, Shop, Boss }
+
     [Header("Room Info")]
     public Vector2 gridPos;
+    public RoomType roomType = RoomType.Combat;
     
     [Header("Exits")]
     public bool hasNorth;

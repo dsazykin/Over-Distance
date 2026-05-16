@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e890932ae95f1c94698907f05c8bd2e2, type: 3}
+  m_Name: Preset_Start_Standard
+  m_EditorClassIdentifier: Assembly-CSharp::RoomPreset
+  roomType: 0
+  roomPrefab: {fileID: 1684417579184662531, guid: dd34a1eb097bc394bbadc3668f725a15, type: 3}
+  weight: 10
+  mustHaveNorth: 1
+  mustHaveSouth: 1
+  mustHaveEast: 1
+  mustHaveWest: 1

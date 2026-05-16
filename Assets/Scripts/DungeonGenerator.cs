@@ -10,8 +10,8 @@ public class DungeonGenerator : MonoBehaviour
     public Vector2 roomSpacing = new Vector2(30f, 20f);
     
     [Header("Room Pool")]
-    public GameObject startRoomPrefab;
-    public List<GameObject> roomPrefabs;
+    public RoomPreset startRoomPreset;
+    public List<RoomPreset> roomPresets;
     public GameObject wallBlockPrefab; // To seal unused doors
 
     private Dictionary<Vector2, Room> dungeonGrid = new Dictionary<Vector2, Room>();
@@ -31,7 +31,13 @@ public class DungeonGenerator : MonoBehaviour
     void GenerateDungeon()
     {
         // 1. Spawn the Start Room
-        Room startRoom = SpawnRoom(Vector2.zero, startRoomPrefab);
+        if (startRoomPreset == null)
+        {
+            Debug.LogError("No Start Room Preset assigned to DungeonGenerator!");
+            return;
+        }
+
+        Room startRoom = SpawnRoom(Vector2.zero, startRoomPreset.roomPrefab);
         startRoom.OnPlayerEnter(); // Set initial camera limits
 
         Queue<Vector2> roomQueue = new Queue<Vector2>();
@@ -54,24 +60,17 @@ public class DungeonGenerator : MonoBehaviour
 
         // 3. Seal any doors that don't lead anywhere
         SealUnconnectedDoors();
-
-        // 4. Finalize A* grid
-        PathGrid pathGrid = Object.FindFirstObjectByType<PathGrid>();
-        if (pathGrid != null)
-        {
-             // pathGrid.GenerateGrid(); 
-        }
     }
 
     void TrySpawnNeighbor(Vector2 targetPos, Door.DoorDirection fromDirection, ref int roomsSpawned, Queue<Vector2> queue)
     {
         if (dungeonGrid.ContainsKey(targetPos) || roomsSpawned >= maxRooms) return;
 
-        // Find all prefabs that have the REQUIRED connecting door
-        List<GameObject> validPrefabs = new List<GameObject>();
-        foreach (var prefab in roomPrefabs)
+        // Find all presets that have the REQUIRED connecting door
+        List<RoomPreset> validPresets = new List<RoomPreset>();
+        foreach (var preset in roomPresets)
         {
-            Room roomScript = prefab.GetComponent<Room>();
+            Room roomScript = preset.roomPrefab.GetComponent<Room>();
             bool hasRequiredDoor = false;
             
             // If we are moving North, the new room must have a South door to connect back
@@ -83,16 +82,34 @@ public class DungeonGenerator : MonoBehaviour
                 case Door.DoorDirection.West:  hasRequiredDoor = roomScript.hasEast; break;
             }
 
-            if (hasRequiredDoor) validPrefabs.Add(prefab);
+            if (hasRequiredDoor) validPresets.Add(preset);
         }
 
-        if (validPrefabs.Count > 0)
+        if (validPresets.Count > 0)
         {
-            GameObject randomPrefab = validPrefabs[Random.Range(0, validPrefabs.Count)];
-            SpawnRoom(targetPos, randomPrefab);
+            // Pick based on weights
+            RoomPreset selectedPreset = PickWeightedPreset(validPresets);
+            SpawnRoom(targetPos, selectedPreset.roomPrefab);
             roomsSpawned++;
             queue.Enqueue(targetPos);
         }
+    }
+
+    RoomPreset PickWeightedPreset(List<RoomPreset> presets)
+    {
+        int totalWeight = 0;
+        foreach (var p in presets) totalWeight += p.weight;
+        
+        int randomValue = Random.Range(0, totalWeight);
+        int currentWeight = 0;
+        
+        foreach (var p in presets)
+        {
+            currentWeight += p.weight;
+            if (randomValue < currentWeight) return p;
+        }
+        
+        return presets[0];
     }
 
     void SealUnconnectedDoors()
