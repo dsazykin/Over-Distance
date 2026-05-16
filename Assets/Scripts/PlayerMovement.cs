@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
@@ -17,9 +18,14 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 15f;
     public float dashDuration = 0.2f;
     public float dashCooldown = 1f;
+    public UnityEvent<float> OnDashCooldownChanged; // (0 to 1 value)
 
     private bool isDashing;
     private bool canDash = true;
+
+    [Header("Knockback Settings")]
+    public float knockbackDuration = 0.15f;
+    private bool isKnockedBack;
     
     [Header("Visuals")]
     public SpriteRenderer spriteRenderer; 
@@ -129,6 +135,11 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void FixedUpdate() {
+        // Knockback has highest priority
+        if (isKnockedBack) {
+            return;
+        }
+
         // If we are currently dashing, ignore normal movement and apply dash velocity
         if (isDashing) {
             rb.MovePosition(rb.position + lastMovement * dashSpeed * Time.fixedDeltaTime);
@@ -142,6 +153,31 @@ public class PlayerMovement : MonoBehaviour
 
         // Normal walking movement
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    public void ApplyKnockback(float force, Vector2 direction)
+    {
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(KnockbackRoutine(force, direction));
+        }
+    }
+
+    private IEnumerator KnockbackRoutine(float force, Vector2 direction)
+    {
+        isKnockedBack = true;
+        isDashing = false; // Interrupt dash
+        isAttacking = false; // Interrupt attack
+        weaponHitbox.SetActive(false);
+
+        rb.linearVelocity = direction * force;
+        
+        yield return new WaitForSeconds(knockbackDuration);
+        
+        rb.linearVelocity = Vector2.zero;
+        isKnockedBack = false;
+        
+        UpdateAnimationState();
     }
 
     // A Coroutine acts like a mini-timeline that we can pause
@@ -167,7 +203,16 @@ public class PlayerMovement : MonoBehaviour
         // 3. Return to normal animation/sprite state
         UpdateAnimationState();
 
-        yield return new WaitForSeconds(dashCooldown);
+        // 4. Handle Cooldown Progress
+        float timer = 0;
+        while (timer < dashCooldown)
+        {
+            timer += Time.deltaTime;
+            OnDashCooldownChanged?.Invoke(timer / dashCooldown);
+            yield return null;
+        }
+
+        OnDashCooldownChanged?.Invoke(1f);
         canDash = true;
     }
     

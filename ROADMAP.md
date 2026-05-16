@@ -7,22 +7,22 @@ This document outlines the planned trajectory for the **Over Distance** prototyp
 ## 🚀 Immediate Milestones
 
 ### 1. UI & HUD (The "Feedback" Phase)
-*   [ ] **Health Bar:** Real-time visual representation of player HP.
+*   [ ] **Health Bar (Player):** Real-time visual representation of player HP.
 *   [ ] **Dash Cooldown UI:** A small icon or slider showing when the dash is ready.
-*   [ ] **Damage Numbers:** Floating text when enemies (or the player) take damage.
 *   [ ] **Game Over Screen:** A simple UI overlay with a "Retry" button.
 
 ### 2. Combat Expansion
-*   [ ] **Knockback System:** Add physical pushback when enemies or the player are hit.
+*   [ ] **Knockback System:** (In Progress) Refine physics impact.
 *   [ ] **Attack Combo:** A simple 3-hit combo chain for the player's weapon.
 *   [ ] **Weapon Visuals:** Create a swinging sword or weapon sprite (currently using a ghost hitbox).
 
 ### 3. Enemy AI (The "Brain" Phase)
-*   [ ] **A* Pathfinding:** Implement NavMesh or a simple grid-based pathfinder so enemies don't walk into walls.
+*   [ ] **A* Pathfinding:** (Implemented) Modular per-room pathfinding.
 *   [ ] **Enemy Types:**
     *   **Charger:** Fast, straight-line lunges.
     *   **Ranged:** Stays at a distance and fires projectiles.
 *   [ ] **Spawn System:** An `EnemySpawner` that manages waves or room-clearing logic.
+*   [ ] **Boss HUD:** A unique, large health bar reserved ONLY for boss encounters.
 
 ---
 

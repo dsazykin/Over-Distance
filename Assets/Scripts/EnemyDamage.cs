@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemyDamage : MonoBehaviour
 {
     public int damage = 10;
+    public float knockbackForce = 3f;
     public float damageCooldown = 1f; // How often this specific enemy can damage the player
     private float nextDamageTime;
     
@@ -20,7 +21,7 @@ public class EnemyDamage : MonoBehaviour
         PlayerHealth playerHealth = collision.gameObject.GetComponentInParent<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(damage);
+            playerHealth.TakeDamage(damage, knockbackForce, transform.position);
             nextDamageTime = Time.time + damageCooldown;
         }
     }
@@ -35,7 +36,7 @@ public class EnemyDamage : MonoBehaviour
             PlayerHealth playerHealth = collision.GetComponentInParent<PlayerHealth>();
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(damage);
+                playerHealth.TakeDamage(damage, knockbackForce, transform.position);
                 nextDamageTime = Time.time + damageCooldown;
             }
         }

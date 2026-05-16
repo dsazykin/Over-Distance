@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
@@ -6,6 +7,9 @@ public class PlayerHealth : MonoBehaviour
     [Header("Health Settings")]
     public int maxHealth = 100;
     public int currentHealth;
+
+    [Header("Events")]
+    public UnityEvent<int, int> OnHealthChanged; // (current, max)
 
     [Header("Visuals")]
     public SpriteRenderer spriteRenderer;
@@ -22,14 +26,17 @@ public class PlayerHealth : MonoBehaviour
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
+
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, float knockbackForce = 0, Vector2 sourcePosition = default)
     {
         // We no longer return early here because enemies handle their own cooldowns.
         // This allows multiple enemies to hit the player in quick succession.
 
         currentHealth -= damage;
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
         Debug.Log($"Player took {damage} damage. Current Health: {currentHealth}");
 
         if (currentHealth <= 0)
@@ -39,6 +46,17 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
+            // Trigger knockback
+            if (knockbackForce > 0)
+            {
+                PlayerMovement movement = GetComponent<PlayerMovement>();
+                if (movement != null)
+                {
+                    Vector2 direction = ((Vector2)transform.position - sourcePosition).normalized;
+                    movement.ApplyKnockback(knockbackForce, direction);
+                }
+            }
+
             // Trigger visual feedback
             if (flickerCoroutine != null) StopCoroutine(flickerCoroutine);
             flickerCoroutine = StartCoroutine(HandleFlicker());
@@ -96,6 +114,7 @@ public class PlayerHealth : MonoBehaviour
         {
             currentHealth = maxHealth;
         }
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
         Debug.Log($"Player healed {amount}. Current Health: {currentHealth}");
     }
 }
