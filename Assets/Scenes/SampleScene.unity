@@ -460,7 +460,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DungeonGenerator
   maxRooms: 10
-  roomSpacing: {x: 22, y: 16}
+  roomSpacing: {x: 30, y: 25}
   startRoomPreset: {fileID: 11400000, guid: bad2140565aa65e4094913500359b6a6, type: 2}
   roomPresets:
   - {fileID: 11400000, guid: 7a4c788626e46d346ac2b12c95f49c08, type: 2}

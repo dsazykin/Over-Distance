@@ -37,7 +37,13 @@ public class Room : MonoBehaviour
             CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
             if (cam != null)
             {
-                cam.SetRoomLimits(minX, maxX, minY, maxY);
+                // Add our world position to the relative limits so the camera knows where we are!
+                cam.SetRoomLimits(
+                    transform.position.x + minX, 
+                    transform.position.x + maxX, 
+                    transform.position.y + minY, 
+                    transform.position.y + maxY
+                );
             }
         }
 
