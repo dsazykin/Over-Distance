@@ -80,10 +80,9 @@ public class EnemyMovement : MonoBehaviour
         while (true)
         {
             // 1. Wait until we actually have a grid and a player target
-            if (pathfinding != null && player != null)
+            if (pathfinding != null && pathfinding.HasGrid && player != null)
             {
                 // 2. Only pathfind if we are in the SAME room as the player
-                // We check this by seeing if the player's position is within our local grid's bounds
                 if (IsPlayerInRoom())
                 {
                     currentPath = pathfinding.FindPath(transform.position, player.position);
@@ -91,7 +90,7 @@ public class EnemyMovement : MonoBehaviour
                 }
                 else
                 {
-                    currentPath = null; // Stay still if player is in another room
+                    currentPath = null;
                 }
             }
             yield return new WaitForSeconds(pathUpdateInterval);

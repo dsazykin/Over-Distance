@@ -6,6 +6,8 @@ public class Pathfinding : MonoBehaviour
 {
     private PathGrid grid;
 
+    public bool HasGrid => grid != null;
+
     public void SetGrid(PathGrid newGrid)
     {
         grid = newGrid;
@@ -15,7 +17,6 @@ public class Pathfinding : MonoBehaviour
     {
         if (grid == null) 
         {
-            Debug.LogError($"Pathfinding on {gameObject.name} has NO GRID assigned!");
             return null;
         }
 
@@ -25,19 +26,16 @@ public class Pathfinding : MonoBehaviour
         // If start or target is unwalkable, find the nearest walkable neighbor
         if (!startNode.walkable) 
         {
-            Debug.Log($"{gameObject.name}: Start Node is unwalkable. Finding nearest.");
             startNode = GetNearestWalkableNode(startNode);
         }
         if (!targetNode.walkable) 
         {
-            Debug.Log($"{gameObject.name}: Target Node is unwalkable. Finding nearest.");
             targetNode = GetNearestWalkableNode(targetNode);
         }
 
         // Final safety check
         if (startNode == null || !startNode.walkable || targetNode == null || !targetNode.walkable)
         {
-            Debug.LogWarning($"{gameObject.name}: Pathfinding failed. Start walkable: {startNode?.walkable}, Target walkable: {targetNode?.walkable}");
             return null;
         }
 

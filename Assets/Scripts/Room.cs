@@ -29,6 +29,15 @@ public class Room : MonoBehaviour
     [Header("Pathfinding")]
     public PathGrid localGrid;
 
+    void Awake()
+    {
+        // Auto-find the grid if we forgot to link it in the inspector
+        if (localGrid == null)
+        {
+            localGrid = GetComponent<PathGrid>();
+        }
+    }
+
     public void OnPlayerEnter()
     {
         // 1. Tell the camera to constrain itself to this room
@@ -58,7 +67,10 @@ public class Room : MonoBehaviour
         EnemyMovement[] enemiesInRoom = GetComponentsInChildren<EnemyMovement>();
         foreach (var enemy in enemiesInRoom)
         {
-            enemy.UpdatePathfindingGrid(localGrid);
+            if (localGrid != null)
+            {
+                enemy.UpdatePathfindingGrid(localGrid);
+            }
         }
     }
 }
