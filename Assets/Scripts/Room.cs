@@ -32,10 +32,13 @@ public class Room : MonoBehaviour
     public void OnPlayerEnter()
     {
         // 1. Tell the camera to constrain itself to this room
-        CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
-        if (cam != null)
+        if (Camera.main != null)
         {
-            cam.SetRoomLimits(minX, maxX, minY, maxY);
+            CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
+            if (cam != null)
+            {
+                cam.SetRoomLimits(minX, maxX, minY, maxY);
+            }
         }
 
         // 2. Reset all parallax layers to prevent jumps

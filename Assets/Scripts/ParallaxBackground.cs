@@ -34,6 +34,10 @@ public class ParallaxBackground : MonoBehaviour
     // Call this when the player moves between rooms to prevent the background from jumping
     public void ResetParallax()
     {
+        if (cameraTransform == null) 
+        {
+            cameraTransform = Camera.main.transform;
+        }
         lastCameraX = cameraTransform.position.x;
     }
 }
