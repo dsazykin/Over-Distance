@@ -20,7 +20,22 @@ public class EnemyMovement : MonoBehaviour
 
     void Start()
     {
+        InitializeComponents();
+        StartCoroutine(UpdatePathRoutine());
+    }
+
+    private void InitializeComponents()
+    {
+        if (rb != null) return; // Already initialized
+
         rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f;
+            rb.freezeRotation = true;
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        }
         
         // Find the player
         PlayerMovement playerMovement = Object.FindFirstObjectByType<PlayerMovement>();
@@ -36,11 +51,24 @@ public class EnemyMovement : MonoBehaviour
             pathfinding = gameObject.AddComponent<Pathfinding>();
         }
 
-        StartCoroutine(UpdatePathRoutine());
+        // Ensure the main collider is NOT a trigger for wall collisions
+        Collider2D mainCollider = GetComponent<Collider2D>();
+        if (mainCollider != null)
+        {
+            mainCollider.isTrigger = false;
+        }
+
+        // Automatically find our room's grid if we don't have one
+        Room myRoom = GetComponentInParent<Room>();
+        if (myRoom != null && myRoom.localGrid != null && pathfinding != null)
+        {
+            pathfinding.SetGrid(myRoom.localGrid);
+        }
     }
 
     public void UpdatePathfindingGrid(PathGrid newGrid)
     {
+        InitializeComponents();
         if (pathfinding != null)
         {
             pathfinding.SetGrid(newGrid);
