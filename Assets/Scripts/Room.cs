@@ -42,9 +42,9 @@ public class Room : MonoBehaviour
             layer.ResetParallax();
         }
 
-        // 3. Update all enemies to use this room's grid
-        EnemyMovement[] enemies = Object.FindObjectsByType<EnemyMovement>(FindObjectsSortMode.None);
-        foreach (var enemy in enemies)
+        // 3. Update enemies ONLY in this room to use this room's grid
+        EnemyMovement[] enemiesInRoom = GetComponentsInChildren<EnemyMovement>();
+        foreach (var enemy in enemiesInRoom)
         {
             enemy.UpdatePathfindingGrid(localGrid);
         }
