@@ -765,6 +765,9 @@ GameObject:
   - component: {fileID: 572412063}
   - component: {fileID: 572412064}
   - component: {fileID: 572412065}
+  - component: {fileID: 572412068}
+  - component: {fileID: 572412067}
+  - component: {fileID: 572412066}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -813,23 +816,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 3
   rb: {fileID: 572412058}
-  dashSpeed: 15
-  dashDuration: 0.2
-  dashCooldown: 1
-  OnDashCooldownChanged:
-    m_PersistentCalls:
-      m_Calls: []
   knockbackDuration: 0.15
-  spriteRenderer: {fileID: 572412060}
-  animator: {fileID: 0}
-  spriteDown: {fileID: -4760862801754791655, guid: 028d2f1bdf2edde42b589e2ca005e140, type: 3}
-  spriteUp: {fileID: -7440206585673128837, guid: 9fa546edc04a10b4983b0a6572712a64, type: 3}
-  spriteSide: {fileID: -908722756061395399, guid: 8ac863c3da60f3545b1e261bed1beeaf, type: 3}
-  dashSpriteDown: {fileID: 2679622716268599063, guid: 04c74d1c75e175741a0c9dcd27156d76, type: 3}
-  dashSpriteUp: {fileID: 7899463268015020207, guid: f66ab9c2035e666439fd489ef2cf13bb, type: 3}
-  dashSpriteSide: {fileID: 294674276645480053, guid: 70d381877bb0c0b4e8320d7a0e4bb657, type: 3}
-  weaponHitbox: {fileID: 1902821589}
-  attackDuration: 0.2
 --- !u!212 &572412060
 SpriteRenderer:
   serializedVersion: 2
@@ -1025,6 +1012,58 @@ MonoBehaviour:
   flickerDuration: 1
   flickerInterval: 0.1
   spriteUp: {fileID: -4760862801754791655, guid: 028d2f1bdf2edde42b589e2ca005e140, type: 3}
+--- !u!114 &572412066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572412057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d291e34d42c41742a5ce5706536ae79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisuals
+  spriteRenderer: {fileID: 572412060}
+  animator: {fileID: 572412064}
+  spriteDown: {fileID: -4760862801754791655, guid: 028d2f1bdf2edde42b589e2ca005e140, type: 3}
+  spriteUp: {fileID: -7440206585673128837, guid: 9fa546edc04a10b4983b0a6572712a64, type: 3}
+  spriteSide: {fileID: -908722756061395399, guid: 8ac863c3da60f3545b1e261bed1beeaf, type: 3}
+  dashSpriteDown: {fileID: 2679622716268599063, guid: 04c74d1c75e175741a0c9dcd27156d76, type: 3}
+  dashSpriteUp: {fileID: 7899463268015020207, guid: f66ab9c2035e666439fd489ef2cf13bb, type: 3}
+  dashSpriteSide: {fileID: 294674276645480053, guid: 70d381877bb0c0b4e8320d7a0e4bb657, type: 3}
+--- !u!114 &572412067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572412057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d10ebee6d1265e47b9ceb7a326e1a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
+  dashSpeed: 15
+  dashDuration: 0.2
+  dashCooldown: 1
+  OnDashCooldownChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &572412068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572412057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d944d1824745a64f9e673855bf1316e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  weaponHitbox: {fileID: 1902821589}
+  attackDuration: 0.15
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0

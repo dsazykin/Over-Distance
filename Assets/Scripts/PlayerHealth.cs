@@ -86,19 +86,19 @@ public class PlayerHealth : MonoBehaviour
         if (flickerCoroutine != null) StopCoroutine(flickerCoroutine);
         spriteRenderer.enabled = true;
 
-        // 2. Disable movement
+        // 2. Disable player scripts
         PlayerMovement movement = GetComponent<PlayerMovement>();
-        if (movement != null)
-        {
-            movement.enabled = false;
-        }
+        if (movement != null) movement.enabled = false;
+        
+        PlayerDash dash = GetComponent<PlayerDash>();
+        if (dash != null) dash.enabled = false;
 
-        // 3. Disable the Animator to stop all animations
-        Animator animator = GetComponent<Animator>();
-        if (animator != null)
-        {
-            animator.enabled = false;
-        }
+        PlayerAttack attack = GetComponent<PlayerAttack>();
+        if (attack != null) attack.enabled = false;
+
+        // 3. Disable the Visuals/Animator
+        PlayerVisuals visuals = GetComponent<PlayerVisuals>();
+        if (visuals != null) visuals.DisableAnimator();
         
         // 4. Tint the character gray to indicate death
         spriteRenderer.sprite = spriteUp; // In the future this will play the death animation
