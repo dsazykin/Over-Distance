@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c7df71a09dac77541939a358e837b4c5
+guid: c892f37f3da86bd4f9f7c4e5698b2ce8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6542325873781457614
-    second: night3_0
+      213: 6844352795907286274
+    second: night2 (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,9 +40,9 @@ TextureImporter:
     filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 128
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: night3_0
+      name: night2 (1)_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 2048
-        height: 1394
+        height: 1412
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ec2479f28b20bca50800000000000000
-      internalID: 6542325873781457614
+      spriteID: 205618dda960cfe50800000000000000
+      internalID: 6844352795907286274
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      night3_0: 6542325873781457614
+      night2 (1)_0: 6844352795907286274
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
