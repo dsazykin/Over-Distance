@@ -4,16 +4,21 @@ public class ParallaxBackground : MonoBehaviour
 {
     [Header("Parallax Settings")]
     [Tooltip("How fast this layer moves horizontally. 0 is still (sky), 1 moves exactly with the camera.")]
-    public float parallaxSpeed; 
+    public float parallaxSpeedX; 
+    [Tooltip("How fast this layer moves vertically. Only works if Lock Vertical is unchecked.")]
+    public float parallaxSpeedY;
+    
+    [Tooltip("If checked, the layer stays at a fixed Y offset from the camera (best for sky/far background).")]
+    public bool lockVertical = true;
     
     private Transform cameraTransform;
-    private float lastCameraX;
+    private Vector3 lastCameraPosition;
     private float offsetFromCameraY;
 
     void Start()
     {
         cameraTransform = Camera.main.transform;
-        lastCameraX = cameraTransform.position.x;
+        lastCameraPosition = cameraTransform.position;
         
         // Save how far we are from the camera vertically at the start
         offsetFromCameraY = transform.position.y - cameraTransform.position.y;
@@ -21,14 +26,24 @@ public class ParallaxBackground : MonoBehaviour
 
     void LateUpdate()
     {
-        // 1. Handle Horizontal Parallax
-        float deltaX = cameraTransform.position.x - lastCameraX;
-        transform.position += new Vector3(deltaX * parallaxSpeed, 0f, 0f);
-        lastCameraX = cameraTransform.position.x;
+        Vector3 deltaCamera = cameraTransform.position - lastCameraPosition;
 
-        // 2. Lock Vertical Position to Camera
-        // This ensures the sky stays at the same relative height in every room
-        transform.position = new Vector3(transform.position.x, cameraTransform.position.y + offsetFromCameraY, transform.position.z);
+        // 1. Handle Horizontal Parallax
+        transform.position += new Vector3(deltaCamera.x * parallaxSpeedX, 0f, 0f);
+
+        // 2. Handle Vertical Movement
+        if (lockVertical)
+        {
+            // Lock Vertical Position to Camera (Sky Mode)
+            transform.position = new Vector3(transform.position.x, cameraTransform.position.y + offsetFromCameraY, transform.position.z);
+        }
+        else
+        {
+            // Apply Vertical Parallax (Foreground/Depth Mode)
+            transform.position += new Vector3(0f, deltaCamera.y * parallaxSpeedY, 0f);
+        }
+
+        lastCameraPosition = cameraTransform.position;
     }
 
     // Call this when the player moves between rooms to prevent the background from jumping
@@ -38,6 +53,6 @@ public class ParallaxBackground : MonoBehaviour
         {
             cameraTransform = Camera.main.transform;
         }
-        lastCameraX = cameraTransform.position.x;
+        lastCameraPosition = cameraTransform.position;
     }
 }
